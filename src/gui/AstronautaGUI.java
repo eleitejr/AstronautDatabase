@@ -49,6 +49,7 @@ public class AstronautaGUI extends JFrame implements ListSelectionListener {
     private JTextArea 						taInfoBio;
     private JTextArea					    taInfoConnection;							// propriedades da conexÃ£o
     private JLabel                          lbl_foto; 									// lbl_foto que contem a foto do astronauta
+    private JLabel							lbl_bandeira;								// lbl_bandeira contem a imagem da bandeira do pais
 
     private final File arqFonte = new File ("./fontes/Spaceport.ttf");
 
@@ -306,9 +307,12 @@ public class AstronautaGUI extends JFrame implements ListSelectionListener {
         
         JMenuItem miTrataImagem = new JMenuItem("Preparar Imagens");
         miTrataImagem.setIcon(new ImageIcon(MenuBuilder.imagePrefix + "shuttle.png"));
+        JMenuItem miPreferencias = new JMenuItem("Preferencias");
+        miPreferencias.setIcon(new ImageIcon(MenuBuilder.imagePrefix + "Radiation.png"));
         
         menuTools.addSeparator();
         menuTools.add(miTrataImagem);
+        menuTools.add(miPreferencias);
 
         mb.add(menuTools);
         
@@ -409,7 +413,8 @@ public class AstronautaGUI extends JFrame implements ListSelectionListener {
     private void criaPainel() throws SQLException {
         // painel de divisao
         JSplitPane split1 = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-                new JLabel(new ImageIcon("imagens/vetor/logoAstroDB.png")), // imagem
+                //new JLabel(new ImageIcon("imagens/vetor/logoAstroDB.png")), // imagem
+        		lbl_bandeira = new JLabel("",new ImageIcon(),JLabel.CENTER), // imagem
                 new JScrollPane(jlistaDeAstronautas)); // diretorio
 
         JSplitPane split2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,// painel de divisao interno
@@ -426,7 +431,7 @@ public class AstronautaGUI extends JFrame implements ListSelectionListener {
 
         JSplitPane split5 = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
                 split4,
-                new JScrollPane(taInfoConnection = new JTextArea())); // area de info sobre conexÃ£o
+                new JScrollPane(taInfoConnection = new JTextArea())); // area de info sobre conexao
 
         getContentPane().add(split5, "Center"); // adiciona a janela
 
@@ -440,12 +445,15 @@ public class AstronautaGUI extends JFrame implements ListSelectionListener {
         } catch (FontFormatException | IOException e1) {
             fonte = new Font("Verdana", Font.BOLD, 14);
         }
-        split1.setDividerLocation(50);
+        split1.setDividerLocation(100);
         split2.setBorder(BorderFactory.createLoweredBevelBorder());
         split2.setDividerLocation(larguraJanela);
         split2.setOneTouchExpandable(true);
         split3.setDividerLocation(alturaJanela);
+        split4.setDividerLocation(140);
         split5.setDividerLocation(1000);
+        
+        lbl_bandeira.setMaximumSize(new Dimension(140,100));
 
         /*****************************************************************************************
          PAINEIS COM INFORMACOES SOBRE O VIAJANTE
@@ -632,7 +640,17 @@ public class AstronautaGUI extends JFrame implements ListSelectionListener {
         lbl_foto.setSize(larguraJanela, alturaJanela);
         assert imagem != null;
         lbl_foto.setIcon(new ImageIcon(imagem));
+        
+        // Bandeira do Pais
+        
+        String bandeira = null;
 
+        bandeira = "./imagens/flags_big/" + selecionado.getPais_Nasc() + ".png";
+
+        lbl_bandeira.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        lbl_bandeira.setSize(larguraJanela, alturaJanela);
+        assert bandeira != null;
+        lbl_bandeira.setIcon((new ImageIcon(bandeira)));       
 
     }
 
@@ -842,8 +860,16 @@ public class AstronautaGUI extends JFrame implements ListSelectionListener {
                 
                 //***************************************************
                 	FormatadorDeImagem.preparaImagens(astronautas);
+                	FormatadorDeImagem.preparaBandeiras(paises);
                 //***************************************************
             }
+            
+            if (acao.equals("Preferencias")){
+
+            	//TODO: implementar
+                mostraMsgOperNaoImplementada();
+            }
+
 
             // Ordenar por IdAstronauta = ordem de viagem ao espaÃ§o
             if (acao.equals(sOrdenar[0*3])) {
@@ -903,7 +929,7 @@ public class AstronautaGUI extends JFrame implements ListSelectionListener {
                     AstronautaGUI.this,
                     "(C)2015-2016 The Astronaut Database \n " + "http://www.astronautdatabase.com\n\n" +
                     "Contact:\t Erasmo Leite Jr \n" +
-                    "\t erasmo@astronautdatabase.com \n\n" +
+                    "erasmo@astronautdatabase.com \n\n" +
                     "Thanks to:\n" +
                     "- Spacefacts - http://www.spacefacts.de\n" +
                     "- NASA - http://www.nasa.gov/\n" +
@@ -938,7 +964,7 @@ public class AstronautaGUI extends JFrame implements ListSelectionListener {
 
                 String paisSel = ((JMenuItem)eventoPais.getSource()).getIcon().toString();
 
-                // A expressÃ£o abaixo retorna o cÃ³digo ISO-3 do paÃ­s, a partir do Ã­cone armazenado no JMenuItem
+                // A expressao abaixo retorna o codigo ISO-3 do pais, a partir do icone armazenado no JMenuItem
                 setStrPais(paisSel.substring(16,19));
 
                 atualizaFiltros();
@@ -1056,6 +1082,8 @@ public class AstronautaGUI extends JFrame implements ListSelectionListener {
 		atualizaStatusBar(statusBar);
 		//mostraStatusListaAstro();
 	}
+	
+	
 
 	/****************************************************************************************
      *                                    Metodo MAIN()
